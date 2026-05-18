@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MISTERIA por Najarro X</title>
+    <style>
+        :root {
+            --bg-color: #1a1c23;
+            --shadow-light: #252832;
+            --shadow-dark: #0f1014;
+            --text-color: #7b849c;
+            --neon-green: #39ff14;
+            --accent: #2e3240;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .synth-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--bg-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 10px 10px 20px var(--shadow-dark), 
+                       -10px -10px 20px var(--shadow-light);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--neon-green);
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+        }
+
+        h1 small {
+            font-size: 0.4em;
+            color: var(--text-color);
+            letter-spacing: 2px;
+            text-shadow: none;
+        }
+
+        /* Visualizador con efecto CSS */
+        .visualizer-container {
+            width: 100%;
+            height: 120px;
+            border-radius: 15px;
+            background: #111216;
+            box-shadow: inset 5px 5px 10px #08080a, 
+                        inset -5px -5px 10px #1a1c22;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            width: 95%;
+            height: 80%;
+            filter: drop-shadow(0 0 8px var(--neon-green));
+            animation: alienPulse 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes alienPulse {
+            0% { filter: drop-shadow(0 0 5px var(--neon-green)) hue-rotate(0deg); }
+            50% { filter: drop-shadow(0 0 15px var(--neon-green)) hue-rotate(15deg); }
+            100% { filter: drop-shadow(0 0 5px var(--neon-green)) hue-rotate(-15deg); }
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .panel {
+            padding: 20px;
+            border-radius: 15px;
+            background: var(--bg-color);
+            box-shadow: 5px 5px 10px var(--shadow-dark), 
+                       -5px -5px 10px var(--shadow-light);
+        }
+
+        .panel h3 {
+            margin-top: 0;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #5b6276;
+            border-bottom: 1px solid var(--shadow-dark);
+            padding-bottom: 10px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.8em;
+            margin-bottom: 8px;
+            color: #8a95b0;
+        }
+
+        /* Sliders Neumorfistas */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-color);
+            border-radius: 4px;
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), 
+                        inset -2px -2px 5px var(--shadow-light);
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: 3px 3px 5px var(--shadow-dark), 
+                       -3px -3px 5px var(--shadow-light);
+            margin-top: -6px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        
+        input[type=range]::-webkit-slider-thumb:active {
+            background: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: none;
+            outline: none;
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), 
+                        inset -3px -3px 6px var(--shadow-light);
+            cursor: pointer;
+        }
+
+        /* Pad XY Xeno-Modulador */
+        .xy-pad-container {
+            grid-column: span 1;
+        }
+        @media (min-width: 768px) {
+            .xy-pad-container { grid-column: span 2; }
+        }
+
+        .xy-pad {
+            width: 100%;
+            height: 150px;
+            background: var(--bg-color);
+            border-radius: 12px;
+            box-shadow: inset 5px 5px 10px var(--shadow-dark), 
+                        inset -5px -5px 10px var(--shadow-light);
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        .xy-pad::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 1px; background: rgba(57, 255, 20, 0.1);
+        }
+        .xy-pad::after {
+            content: '';
+            position: absolute;
+            left: 50%; top: 0; bottom: 0;
+            width: 1px; background: rgba(57, 255, 20, 0.1);
+        }
+
+        .xy-puck {
+            width: 20px;
+            height: 20px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px var(--neon-green);
+            pointer-events: none;
+            transition: transform 0.05s linear;
+        }
+
+        /* PANEL NUEVO: SECUENCIADOR */
+        .seq-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .seq-global-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            align-items: center;
+        }
+
+        .seq-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.9em;
+            color: var(--text-color);
+            background: var(--bg-color);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 4px 4px 8px var(--shadow-dark), 
+                       -4px -4px 8px var(--shadow-light);
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .seq-btn:active, .seq-btn.playing {
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), 
+                        inset -3px -3px 6px var(--shadow-light);
+        }
+
+        .seq-btn.playing {
+            color: var(--neon-green);
+            text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+        }
+
+        .seq-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            width: 100%;
+        }
+
+        .seq-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 5px;
+            border-radius: 10px;
+            background: var(--bg-color);
+            box-shadow: inset 2px 2px 5px var(--shadow-dark), 
+                        inset -2px -2px 5px var(--shadow-light);
+        }
+
+        .seq-led {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2d313f;
+            box-shadow: inset 1px 1px 2px var(--shadow-dark);
+            transition: background 0.05s, box-shadow 0.05s;
+        }
+
+        .seq-led.active {
+            background: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green), 0 0 4px var(--neon-green);
+        }
+
+        .seq-step select {
+            font-size: 0.75em;
+            padding: 4px 2px;
+            text-align: center;
+        }
+
+        /* Teclado */
+        .keyboard {
+            display: flex;
+            justify-content: space-between;
+            height: 120px;
+            gap: 8px;
+            padding: 15px;
+            border-radius: 15px;
+            background: var(--bg-color);
+            box-shadow: 5px 5px 10px var(--shadow-dark), 
+                       -5px -5px 10px var(--shadow-light);
+            position: relative;
+        }
+
+        .key {
+            flex: 1;
+            background: var(--bg-color);
+            border-radius: 5px;
+            box-shadow: 3px 3px 6px var(--shadow-dark), 
+                       -3px -3px 6px var(--shadow-light);
+            cursor: pointer;
+            transition: all 0.1s;
+            position: relative;
+        }
+
+        .key.black-key {
+            background: #15161a;
+            box-shadow: 2px 2px 4px var(--shadow-dark), 
+                       -1px -1px 2px var(--shadow-light);
+            height: 65%;
+            width: calc(100% / 14);
+            position: absolute;
+            top: 15px;
+            z-index: 2;
+            margin-left: calc(-100% / 28);
+        }
+
+        /* Posicionamiento de teclas negras */
+        .key.black-key[data-note="61"] { left: calc((100% / 8) * 1 + 3px); }
+        .key.black-key[data-note="63"] { left: calc((100% / 8) * 2 + 1px); }
+        .key.black-key[data-note="66"] { left: calc((100% / 8) * 4 - 1px); }
+        .key.black-key[data-note="68"] { left: calc((100% / 8) * 5 - 3px); }
+        .key.black-key[data-note="70"] { left: calc((100% / 8) * 6 - 5px); }
+
+        .key:active, .key.active {
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), 
+                        inset -3px -3px 6px var(--shadow-light);
+            background: #1e2029;
+        }
+        .key.active {
+            border-bottom: 3px solid var(--neon-green);
+        }
+
+        .init-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26, 28, 35, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .init-btn {
+            padding: 20px 40px;
+            font-size: 1.2em;
+            color: var(--neon-green);
+            background: var(--bg-color);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 5px 5px 15px var(--shadow-dark), 
+                       -5px -5px 15px var(--shadow-light);
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .init-btn:active {
+            box-shadow: inset 5px 5px 15px var(--shadow-dark), 
+                       inset -5px -5px 15px var(--shadow-light);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="init-overlay" id="initOverlay">
+        <button class="init-btn" id="startAudioBtn">Iniciar Misteria</button>
+    </div>
+
+    <div class="synth-container">
+        <div class="header">
+            <h1>MISTERIA <br><small>por Najarro X</small></h1>
+        </div>
+
+        <div class="visualizer-container">
+            <canvas id="visualizer"></canvas>
+        </div>
+
+        <div class="panels">
+            <!-- Osciladores -->
+            <div class="panel">
+                <h3>Voz Base (Osc 1 & 2)</h3>
+                <div class="control-group">
+                    <label>Forma de Onda 1</label>
+                    <select id="osc1Type">
+                        <option value="sine">Seno (Profundo)</option>
+                        <option value="square">Cuadrada (Retro)</option>
+                        <option value="sawtooth">Diente de Sierra (Agresivo)</option>
+                        <option value="triangle" selected>Triángulo (Mágico)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Desafinación / Detune (Atmósfera)</label>
+                    <input type="range" id="oscDetune" min="0" max="100" value="15">
+                </div>
+            </div>
+
+            <!-- Envolvente y Filtro -->
+            <div class="panel">
+                <h3>Caverna (Filtro & ADSR)</h3>
+                <div class="control-group">
+                    <label>Corte de Filtro (Misterio)</label>
+                    <input type="range" id="filterCutoff" min="100" max="5000" value="800">
+                </div>
+                <div class="control-group">
+                    <label>Ataque (Aparición)</label>
+                    <input type="range" id="envAttack" min="0.01" max="3" step="0.01" value="0.5">
+                </div>
+                <div class="control-group">
+                    <label>Release (Desvanecimiento)</label>
+                    <input type="range" id="envRelease" min="0.1" max="5" step="0.1" value="2.0">
+                </div>
+            </div>
+
+            <!-- Efectos -->
+            <div class="panel">
+                <h3>Espacio (Efectos)</h3>
+                <div class="control-group">
+                    <label>Eco Alienígena (Delay Time)</label>
+                    <input type="range" id="delayTime" min="0.1" max="1" step="0.01" value="0.4">
+                </div>
+                <div class="control-group">
+                    <label>Retroalimentación (Feedback)</label>
+                    <input type="range" id="delayFeedback" min="0" max="0.9" step="0.01" value="0.6">
+                </div>
+            </div>
+
+            <!-- El Diferenciador -->
+            <div class="panel xy-pad-container">
+                <h3>Xeno-Modulador (Touch Pad)</h3>
+                <label style="font-size: 0.8em; color: #8a95b0; margin-bottom: 8px; display: block;">Control LFO Mutante: Eje X = Velocidad | Eje Y = Profundidad Alienígena</label>
+                <div class="xy-pad" id="xenoPad">
+                    <div class="xy-puck" id="xenoPuck"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NUEVO PANEL: SECUENCIADOR INTEGRADO -->
+        <div class="panel seq-panel">
+            <h3>Secuenciador Xeno-Rítmico</h3>
+            <div class="seq-global-controls">
+                <div>
+                    <button class="seq-btn" id="seqPlayBtn">Play</button>
+                </div>
+                <div class="control-group" style="margin-bottom:0;">
+                    <label>Velocidad (BPM)</label>
+                    <input type="range" id="seqBpm" min="40" max="300" value="100">
+                </div>
+                <div class="control-group" style="margin-bottom:0;">
+                    <label>Pitch Global (Transposición)</label>
+                    <input type="range" id="seqTranspose" min="-12" max="12" value="0" step="1">
+                </div>
+            </div>
+            
+            <div class="seq-grid">
+                <!-- 8 Pasos con selectores de notas basados en el teclado -->
+                <div class="seq-step" data-step="0">
+                    <div class="seq-led"></div>
+                    <select class="seq-note">
+                        <option value="none">Silencio</option>
+                        <option value="60" selected>Do (C4)</option>
+                        <option value="61">Do#</option>
+                        <option value="62">Re</option>
+                        <option value="63">Re#</option>
+                        <option value="64">Mi</option>
+                        <option value="65">Fa</option>
+                        <option value="66">Fa#</option>
+                        <option value="67">Sol</option>
+                        <option value="68">Sol#</option>
+                        <option value="69">La</option>
+                        <option value="70">La#</option>
+                        <option value="71">Si</option>
+                        <option value="72">Do (C5)</option>
+                    </select>
+                </div>
+                <div class="seq-step" data-step="1">
+                    <div class="seq-led"></div>
+                    <select class="seq-note">
+                        <option value="none">Silencio</option>
+                        <option value="60">Do (C4)</option>
+                        <option value="61">Do#</option>
+                        <option value="62">Re</option>
+                        <option value="63" selected>Re#</option>
+                        <option value="64">Mi</option>
+                        <option value="65">Fa</option>
+                        <option value="66">Fa#</option>
+                        <option value="67">Sol</option>
+                        <option value="68">Sol#</option>
+                        <option value="69">La</option>
+                        <option value="70">La#</option>
+                        <option value="71">Si</option>
+                        <option value="72">Do (C5)</option>
+                    </select>
+                </div>
+                <div class="seq-step" data-step="2">
+                    <div class="seq-led"></div>
+                    <select class="seq-note">
+                        <option value="none">Silencio</option>
+                        <option value="60">Do (C4)</option>
+                        <option value="61">Do#</option>
+                        <option value="62">Re</option>
+                        <option value="63">Re#</option>
+                        <option value="64">Mi</option>
+                        <option value="65">Fa</option>
+                        <option value="66">Fa#</option>
+                        <option value="67" selected>Sol</option>
+                        <option value="68">Sol#</option>
+                        <option value="69">La</option>
+                        <option value="70">La#</option>
+                        <option value="71">Si</option>
+                        <option value="72">Do (C5)</option>
+                    </select>
+                </div>
+                <div class="seq-step" data-step="3">
+                    <div class="seq-led"></div>
+                    <select class="seq-note">
+                        <option value="none">Silencio</option>
+                        <option value="60">Do (C4)</option>
+                        <option value="61">Do#</option>
+                        <option value="62">Re</option>
+                        <option value="63">Re#</option>
+                        <option value="64">Mi</option>
+                        <option value="65">Fa</option>
+                        <option value="66">Fa#</option>
+                        <option value="67">Sol</option>
+                        <option value="68">Sol#</option>
+                        <option value="69" selected>La</option>
+                        <option value="70">La#</option>
+                        <option value="71">Si</option>
+                        <option value="72">Do (C5)</option>
+                    </select>
+                </div>
+                <div class="seq-step" data-step="4">
+                    <div class="seq-led"></div>
+                    <select class="seq-note">
+                        <option value="none">Silencio</option>
+                        <option value="60">Do (C4)</option>
+                        <option value="61">Do#</option>
+                        <option value="62">Re</option>
+                        <option value="63">Re#</option>
+                        <option value="64">Mi</option>
+                        <option value="65">Fa</option>
+                        <option value="66">Fa#</option>
+                        <option value="67">Sol</option>
+                        <option value="68">Sol#</option>
+                        <option value="69">La</option>
+                        <option value="70">La#</option>
+                        <option value="71" selected>Si</option>
+                        <option value="72">Do (C5)</option>
+                    </select>
+                </div>
+                <div class="seq-step" data-step="5">
+                    <div class="seq-led"></div>
+                    <select class="seq-note">
+                        <option value="none" selected>Silencio</option>
+                        <option value="60">Do (C4)</option>
+                        <option value="61">Do#</option>
+                        <option value="62">Re</option>
+                        <option value="63">Re#</option>
+                        <option value="64">Mi</option>
+                        <option value="65">Fa</option>
+                        <option value="66">Fa#</option>
+                        <option value="67">Sol</option>
+                        <option value="68">Sol#</option>
+                        <option value="69">La</option>
+                        <option value="70">La#</option>
+                        <option value="71">Si</option>
+                        <option value="72">Do (C5)</option>
+                    </select>
+                </div>
+                <div class="seq-step" data-step="6">
+                    <div class="seq-led"></div>
+                    <select class="seq-note">
+                        <option value="none">Silencio</option>
+                        <option value="60">Do (C4)</option>
+                        <option value="61">Do#</option>
+                        <option value="62">Re</option>
+                        <option value="63">Re#</option>
+                        <option value="64">Mi</option>
+                        <option value="65">Fa</option>
+                        <option value="66">Fa#</option>
+                        <option value="67">Sol</option>
+                        <option value="68">Sol#</option>
+                        <option value="69">La</option>
+                        <option value="70">La#</option>
+                        <option value="71">Si</option>
+                        <option value="72" selected>Do (C5)</option>
+                    </select>
+                </div>
+                <div class="seq-step" data-step="7">
+                    <div class="seq-led"></div>
+                    <select class="seq-note">
+                        <option value="none" selected>Silencio</option>
+                        <option value="60">Do (C4)</option>
+                        <option value="61">Do#</option>
+                        <option value="62">Re</option>
+                        <option value="63">Re#</option>
+                        <option value="64">Mi</option>
+                        <option value="65">Fa</option>
+                        <option value="66">Fa#</option>
+                        <option value="67">Sol</option>
+                        <option value="68">Sol#</option>
+                        <option value="69">La</option>
+                        <option value="70">La#</option>
+                        <option value="71">Si</option>
+                        <option value="72">Do (C5)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="keyboard" id="keyboard">
+            <!-- Teclas Blancas -->
+            <div class="key" data-note="60"></div> <!-- C -->
+            <div class="key" data-note="62"></div> <!-- D -->
+            <div class="key" data-note="64"></div> <!-- E -->
+            <div class="key" data-note="65"></div> <!-- F -->
+            <div class="key" data-note="67"></div> <!-- G -->
+            <div class="key" data-note="69"></div> <!-- A -->
+            <div class="key" data-note="71"></div> <!-- B -->
+            <div class="key" data-note="72"></div> <!-- C -->
+            <!-- Teclas Negras -->
+            <div class="key black-key" data-note="61"></div> <!-- C# -->
+            <div class="key black-key" data-note="63"></div> <!-- D# -->
+            <div class="key black-key" data-note="66"></div> <!-- F# -->
+            <div class="key black-key" data-note="68"></div> <!-- G# -->
+            <div class="key black-key" data-note="70"></div> <!-- A# -->
+        </div>
+    </div>
+
+    <script>
+        let audioCtx;
+        let masterGain;
+        let masterFilter;
+        let delayNode;
+        let delayFeedback;
+        let analyser;
+        let lfo;
+        let lfoGain;
+        
+        // Estado del sintetizador
+        let activeVoices = {};
+        
+        // Estado del secuenciador
+        let isSequencerPlaying = false;
+        let currentStep = 0;
+        let seqTimeoutId = null;
+        let lastSequencerVoice = null;
+
+        // Referencias UI
+        const canvas = document.getElementById('visualizer');
+        const canvasCtx = canvas.getContext('2d');
+        const xenoPad = document.getElementById('xenoPad');
+        const xenoPuck = document.getElementById('xenoPuck');
+        
+        // Iniciar motor de audio
+        document.getElementById('startAudioBtn').addEventListener('click', () => {
+            document.getElementById('initOverlay').style.display = 'none';
+            initAudio();
+            drawVisualizer();
+        });
+
+        function initAudio() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Analizador para visuales
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 2048;
+
+            // Cadena de Efectos Global
+            masterFilter = audioCtx.createBiquadFilter();
+            masterFilter.type = 'lowpass';
+            masterFilter.Q.value = 5; 
+            
+            delayNode = audioCtx.createDelay(2.0);
+            delayFeedback = audioCtx.createGain();
+            
+            masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0.5; 
+
+            // Enrutamiento de Delay
+            masterFilter.connect(delayNode);
+            delayNode.connect(delayFeedback);
+            delayFeedback.connect(delayNode);
+            delayNode.connect(masterGain); 
+            masterFilter.connect(masterGain); 
+
+            masterGain.connect(analyser);
+            analyser.connect(audioCtx.destination);
+
+            // LFO Global (Xeno-Modulador)
+            lfo = audioCtx.createOscillator();
+            lfo.type = 'sine';
+            lfo.frequency.value = 2; 
+            
+            lfoGain = audioCtx.createGain();
+            lfoGain.gain.value = 0; 
+            
+            lfo.connect(lfoGain);
+            lfo.start();
+
+            updateParams();
+        }
+
+        function updateParams() {
+            if(!audioCtx) return;
+            masterFilter.frequency.value = parseFloat(document.getElementById('filterCutoff').value);
+            delayNode.delayTime.value = parseFloat(document.getElementById('delayTime').value);
+            delayFeedback.gain.value = parseFloat(document.getElementById('delayFeedback').value);
+        }
+
+        // Eventos de controles estándar
+        document.getElementById('filterCutoff').addEventListener('input', updateParams);
+        document.getElementById('delayTime').addEventListener('input', updateParams);
+        document.getElementById('delayFeedback').addEventListener('input', updateParams);
+
+        // Lógica del Xeno-Modulador (Pad XY)
+        let isDraggingPad = false;
+
+        function handlePad(e) {
+            if(!isDraggingPad || !audioCtx) return;
+            
+            const rect = xenoPad.getBoundingClientRect();
+            let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            let x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+            let y = Math.max(0, Math.min(clientY - rect.top, rect.height));
+
+            // Actualizar UI
+            xenoPuck.style.left = `${x}px`;
+            xenoPuck.style.top = `${y}px`;
+
+            // Mapeo a Audio
+            const xNorm = x / rect.width; 
+            const yNorm = 1 - (y / rect.height); 
+
+            lfo.frequency.setTargetAtTime(0.1 + (xNorm * 15), audioCtx.currentTime, 0.1);
+            lfoGain.gain.setTargetAtTime(yNorm * 500, audioCtx.currentTime, 0.1);
+        }
+
+        xenoPad.addEventListener('mousedown', (e) => { isDraggingPad = true; handlePad(e); });
+        window.addEventListener('mouseup', () => { isDraggingPad = false; });
+        window.addEventListener('mousemove', handlePad);
+        
+        xenoPad.addEventListener('touchstart', (e) => { isDraggingPad = true; handlePad(e); });
+        window.addEventListener('touchend', () => { isDraggingPad = false; });
+        window.addEventListener('touchmove', handlePad);
+
+        // Midi to Freq
+        function noteToFreq(note) {
+            return 440 * Math.pow(2, (note - 69) / 12);
+        }
+
+        // Motor de Voz Polyfónica
+        class Voice {
+            constructor(note) {
+                this.note = note;
+                const freq = noteToFreq(note);
+                
+                this.osc1 = audioCtx.createOscillator();
+                this.osc2 = audioCtx.createOscillator();
+                this.vca = audioCtx.createGain();
+
+                const type = document.getElementById('osc1Type').value;
+                const detune = parseFloat(document.getElementById('oscDetune').value);
+                
+                this.osc1.type = type;
+                this.osc2.type = type === 'sine' ? 'triangle' : 'square'; 
+
+                this.osc1.frequency.value = freq;
+                this.osc2.frequency.value = freq;
+                
+                this.osc1.detune.value = -detune;
+                this.osc2.detune.value = detune;
+
+                lfoGain.connect(this.osc1.detune);
+                lfoGain.connect(this.osc2.detune);
+
+                this.osc1.connect(this.vca);
+                this.osc2.connect(this.vca);
+                this.vca.connect(masterFilter);
+
+                this.vca.gain.setValueAtTime(0, audioCtx.currentTime);
+
+                this.osc1.start();
+                this.osc2.start();
+                
+                this.attack();
+            }
+
+            attack() {
+                const attackTime = parseFloat(document.getElementById('envAttack').value);
+                this.vca.gain.cancelScheduledValues(audioCtx.currentTime);
+                this.vca.gain.setValueAtTime(this.vca.gain.value, audioCtx.currentTime);
+                this.vca.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + attackTime);
+            }
+
+            release() {
+                const releaseTime = parseFloat(document.getElementById('envRelease').value);
+                this.vca.gain.cancelScheduledValues(audioCtx.currentTime);
+                this.vca.gain.setValueAtTime(this.vca.gain.value, audioCtx.currentTime);
+                this.vca.gain.linearRampToValueAtTime(0, audioCtx.currentTime + releaseTime);
+                
+                setTimeout(() => {
+                    this.osc1.stop();
+                    this.osc2.stop();
+                    this.osc1.disconnect();
+                    this.osc2.disconnect();
+                    try {
+                        lfoGain.disconnect(this.osc1.detune);
+                        lfoGain.disconnect(this.osc2.detune);
+                    } catch(e){}
+                }, releaseTime * 1000 + 100);
+            }
+        }
+
+        // Control de Teclado
+        const keys = document.querySelectorAll('.key');
+        
+        function playNote(note, el) {
+            if(!audioCtx) return;
+            if(activeVoices[note]) return; 
+            if(el) el.classList.add('active');
+            activeVoices[note] = new Voice(note);
+        }
+
+        function stopNote(note, el) {
+            if(!activeVoices[note]) return;
+            if(el) el.classList.remove('active');
+            activeVoices[note].release();
+            delete activeVoices[note];
+        }
+
+        keys.forEach(key => {
+            const note = parseInt(key.getAttribute('data-note'));
+            
+            key.addEventListener('mousedown', () => playNote(note, key));
+            key.addEventListener('mouseup', () => stopNote(note, key));
+            key.addEventListener('mouseleave', () => stopNote(note, key));
+            
+            key.addEventListener('touchstart', (e) => { e.preventDefault(); playNote(note, key); });
+            key.addEventListener('touchend', (e) => { e.preventDefault(); stopNote(note, key); });
+        });
+
+        // LÓGICA DEL SECUENCIADOR NUEVO
+        const seqPlayBtn = document.getElementById('seqPlayBtn');
+        const stepsElements = document.querySelectorAll('.seq-step');
+
+        seqPlayBtn.addEventListener('click', () => {
+            if(!audioCtx) return;
+            if (isSequencerPlaying) {
+                stopSequencer();
+            } else {
+                startSequencer();
+            }
+        });
+
+        function startSequencer() {
+            isSequencerPlaying = true;
+            seqPlayBtn.textContent = 'Stop';
+            seqPlayBtn.classList.add('playing');
+            currentStep = 0;
+            runSequenceStep();
+        }
+
+        function stopSequencer() {
+            isSequencerPlaying = false;
+            seqPlayBtn.textContent = 'Play';
+            seqPlayBtn.classList.remove('playing');
+            clearTimeout(seqTimeoutId);
+            
+            // Apagar LEDs
+            document.querySelectorAll('.seq-led').forEach(led => led.classList.remove('active'));
+            // Remover estados visuales de teclas activas por secuencia
+            keys.forEach(k => k.classList.remove('active'));
+
+            if (lastSequencerVoice) {
+                lastSequencerVoice.release();
+                lastSequencerVoice = null;
+            }
+        }
+
+        function runSequenceStep() {
+            if (!isSequencerPlaying) return;
+
+            // Limpiar paso visual anterior
+            document.querySelectorAll('.seq-led').forEach(led => led.classList.remove('active'));
+            keys.forEach(k => k.classList.remove('active'));
+
+            const stepEl = stepsElements[currentStep];
+            const led = stepEl.querySelector('.seq-led');
+            const select = stepEl.querySelector('.seq-note');
+            
+            led.classList.add('active');
+
+            // Detener la nota del paso anterior inmediatamente para evitar solapamientos rítmicos indeseados
+            if (lastSequencerVoice) {
+                lastSequencerVoice.release();
+                lastSequencerVoice = null;
+            }
+
+            const rawValue = select.value;
+            if (rawValue !== 'none') {
+                const baseNote = parseInt(rawValue);
+                const transpose = parseInt(document.getElementById('seqTranspose').value);
+                const finalNote = baseNote + transpose;
+
+                // Iluminar tecla si está en el rango visible
+                const matchingKey = document.querySelector(`.key[data-note="${finalNote}"]`);
+                if (matchingKey) matchingKey.classList.add('active');
+
+                // Disparar sonido secuenciado
+                lastSequencerVoice = new Voice(finalNote);
+            }
+
+            // Calcular tiempos de compás basado en el BPM input
+            const bpm = parseFloat(document.getElementById('seqBpm').value);
+            const stepDurationMs = (60000 / bpm) / 2; // Corcheas (8 pasos por ciclo estándar)
+
+            currentStep = (currentStep + 1) % 8;
+            seqTimeoutId = setTimeout(runSequenceStep, stepDurationMs);
+        }
+
+        // Visualizador (Osciloscopio Verde Neón)
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function drawVisualizer() {
+            requestAnimationFrame(drawVisualizer);
+            if(!analyser) return;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(dataArray);
+
+            canvasCtx.fillStyle = 'rgba(17, 18, 22, 0.4)'; 
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            canvasCtx.lineWidth = 3;
+            canvasCtx.strokeStyle = '#39ff14'; 
+            canvasCtx.beginPath();
+
+            const sliceWidth = canvas.width * 1.0 / bufferLength;
+            let x = 0;
+
+            for(let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.height / 2;
+
+                if(i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(canvas.width, canvas.height / 2);
+            canvasCtx.stroke();
+        }
+    </script>
+</body>
+</html>
